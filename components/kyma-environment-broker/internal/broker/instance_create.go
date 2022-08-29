@@ -139,10 +139,13 @@ func (b *ProvisionEndpoint) Provision(ctx context.Context, instanceID string, de
 		return b.handleExistingOperation(existingOperation, provisioningParameters)
 	}
 
-	// create SKR shoot name
 	shootName := gardener.CreateShootName()
+	shootDomainSuffix := strings.Trim(b.shootDomain, ".")
 
-	dashboardURL := fmt.Sprintf("%s/?kubeconfigID=%s", b.dashboardConfig.LandscapeURL, instanceID)
+	dashboardURL := fmt.Sprintf("https://console.%s.%s", shootName, shootDomainSuffix)
+	if b.dashboardConfig.LandscapeURL != "" {
+		dashboardURL = fmt.Sprintf("%s/?kubeconfigID=%s", b.dashboardConfig.LandscapeURL, instanceID)
+	}
 
 	// create and save new operation
 	operation, err := internal.NewProvisioningOperationWithID(operationID, instanceID, provisioningParameters)
@@ -150,8 +153,14 @@ func (b *ProvisionEndpoint) Provision(ctx context.Context, instanceID string, de
 		logger.Errorf("cannot create new operation: %s", err)
 		return domain.ProvisionedServiceSpec{}, errors.New("cannot create new operation")
 	}
+
+	if provisioningParameters.PlanID == OwnClusterPlanID {
+		shootName = provisioningParameters.Parameters.ShootName
+		shootDomainSuffix = provisioningParameters.Parameters.ShootDomain
+	}
+
 	operation.ShootName = shootName
-	operation.ShootDomain = fmt.Sprintf("%s.%s", shootName, strings.Trim(b.shootDomain, "."))
+	operation.ShootDomain = fmt.Sprintf("%s.%s", shootName, shootDomainSuffix)
 	operation.ShootDNSProviders = b.shootDnsProviders
 	operation.DashboardURL = dashboardURL
 	logger.Infof("Runtime ShootDomain: %s", operation.ShootDomain)
