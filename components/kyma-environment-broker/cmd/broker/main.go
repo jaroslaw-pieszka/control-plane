@@ -665,10 +665,6 @@ func NewProvisioningProcessingQueue(ctx context.Context, provisionManager *proce
 			step:      provisioning.NewBTPOperatorOverridesStep(db.Operations()),
 		},
 		{
-			stage: createRuntimeStageName,
-			step:  provisioning.NewCreateRuntimeWithoutKymaStep(db.Operations(), db.RuntimeStates(), db.Instances(), provisionerClient),
-		},
-		{
 			condition: skipForOwnClusterPlan,
 			stage:     createRuntimeStageName,
 			step:      provisioning.NewCreateRuntimeWithoutKymaStep(db.Operations(), db.RuntimeStates(), db.Instances(), provisionerClient),
