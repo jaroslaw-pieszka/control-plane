@@ -905,11 +905,13 @@ func (s *operations) operationToDB(op internal.Operation) (dbmodel.OperationDTO,
 	if err != nil {
 		return dbmodel.OperationDTO{}, errors.Wrap(err, "while encrypting basic auth")
 	}
+	plainLen := len(op.ProvisioningParameters.Parameters.Kubeconfig)
 	err = s.cipher.EncryptKubeconfig(&op.ProvisioningParameters)
+	log.Infof("kubectl encrypted len: %+v -> %+v", plainLen, len(op.ProvisioningParameters.Parameters.Kubeconfig))
+
 	if err != nil {
 		return dbmodel.OperationDTO{}, errors.Wrap(err, "while encrypting kubeconfig")
 	}
-
 	pp, err := json.Marshal(op.ProvisioningParameters)
 	if err != nil {
 		return dbmodel.OperationDTO{}, errors.Wrap(err, "while marshal provisioning parameters")
@@ -943,7 +945,9 @@ func (s *operations) toOperation(dto *dbmodel.OperationDTO, existingOp internal.
 	if err != nil {
 		return internal.Operation{}, errors.Wrap(err, "while decrypting basic auth")
 	}
+	encLen := len(provisioningParameters.Parameters.Kubeconfig)
 	err = s.cipher.DecryptKubeconfig(&provisioningParameters)
+	log.Infof("kubectl decrypted len: %+v -> %+v", encLen, len(provisioningParameters.Parameters.Kubeconfig))
 	if err != nil {
 		return internal.Operation{}, errors.Wrap(err, "while decrypting kubeconfig")
 	}
