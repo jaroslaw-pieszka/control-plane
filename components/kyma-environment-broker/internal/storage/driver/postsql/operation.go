@@ -946,7 +946,7 @@ func (s *operations) toOperation(dto *dbmodel.OperationDTO, existingOp internal.
 	if !strings.HasPrefix(provisioningParameters.Parameters.Kubeconfig, "apiVersion") {
 		err = s.cipher.DecryptKubeconfig(&provisioningParameters)
 		if err != nil {
-			return internal.Operation{}, errors.Wrap(err, "while decrypting kubeconfig")
+			return internal.Operation{}, errors.Wrapf(err, "while decrypting kubeconfig starting with %s", provisioningParameters.Parameters.Kubeconfig[0:9])
 		}
 	} else {
 		log.Warn("decrypting skipped because kubeconfig is in plain text")
