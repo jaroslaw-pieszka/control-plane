@@ -943,7 +943,7 @@ func (s *operations) toOperation(dto *dbmodel.OperationDTO, existingOp internal.
 		return internal.Operation{}, errors.Wrap(err, "while decrypting basic auth")
 	}
 	// temp hack to avoid errors while decrypting CAVEAT
-	if !strings.HasPrefix(provisioningParameters.Parameters.Kubeconfig, "apiVersion") {
+	if strings.Index(provisioningParameters.Parameters.Kubeconfig, "kind:") == -1 {
 		err = s.cipher.DecryptKubeconfig(&provisioningParameters)
 		if err != nil {
 			return internal.Operation{}, errors.Wrapf(err, "while decrypting kubeconfig starting with %s", provisioningParameters.Parameters.Kubeconfig[0:9])
