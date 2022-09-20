@@ -9,7 +9,10 @@ type NoHyperscalerInput struct {
 }
 
 func (p *NoHyperscalerInput) Defaults() *gqlschema.ClusterConfigInput {
-	return &gqlschema.ClusterConfigInput{}
+	return &gqlschema.ClusterConfigInput{
+		GardenerConfig: &gqlschema.GardenerConfigInput{},
+		Administrators: nil,
+	}
 }
 
 func (p *NoHyperscalerInput) ApplyParameters(input *gqlschema.ClusterConfigInput, pp internal.ProvisioningParameters) {
