@@ -76,6 +76,7 @@ func TestProvisioning_TrialWithEmptyRegion(t *testing.T) {
 
 func TestProvisioning_OwnCluster(t *testing.T) {
 	// given
+	t.Skip()
 	suite := NewBrokerSuiteTest(t)
 	defer suite.TearDown()
 	iid := uuid.New().String()
