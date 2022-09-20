@@ -247,6 +247,10 @@ func (f *InputBuilderFactory) initProvisionRuntimeInput(provider HyperscalerInpu
 		},
 	}
 
+	if provisionInput.ClusterConfig.GardenerConfig == nil {
+		provisionInput.ClusterConfig.GardenerConfig = &gqlschema.GardenerConfigInput{}
+	}
+
 	provisionInput.ClusterConfig.GardenerConfig.KubernetesVersion = f.config.KubernetesVersion
 	provisionInput.ClusterConfig.GardenerConfig.EnableKubernetesVersionAutoUpdate = &f.config.AutoUpdateKubernetesVersion
 	provisionInput.ClusterConfig.GardenerConfig.EnableMachineImageVersionAutoUpdate = &f.config.AutoUpdateMachineImageVersion
