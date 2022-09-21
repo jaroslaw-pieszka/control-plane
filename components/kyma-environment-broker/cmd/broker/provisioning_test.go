@@ -68,7 +68,7 @@ func TestProvisioning_TrialWithEmptyRegion(t *testing.T) {
 					}
 		}`)
 	opID := suite.DecodeOperationID(resp)
-	suite.processReconcilingByOperationID(opID)
+	suite.processProvisioningAndReconcilingByOperationID(opID)
 
 	// then
 	suite.AssertAWSRegionAndZone("eu-west-1")
@@ -76,7 +76,6 @@ func TestProvisioning_TrialWithEmptyRegion(t *testing.T) {
 
 func TestProvisioning_OwnCluster(t *testing.T) {
 	// given
-	t.Skip()
 	suite := NewBrokerSuiteTest(t)
 	defer suite.TearDown()
 	iid := uuid.New().String()
@@ -103,10 +102,10 @@ func TestProvisioning_OwnCluster(t *testing.T) {
 					}
 		}`)
 	opID := suite.DecodeOperationID(resp)
-	suite.processReconcilingByOperationID(opID)
+	suite.FinishReconciliation(opID)
 
 	// then
-	//suite.AssertAWSRegionAndZone("eu-west-1")
+	suite.WaitForOperationState(opID, domain.Succeeded)
 }
 
 func TestProvisioning_TrialAtEU(t *testing.T) {
@@ -134,7 +133,7 @@ func TestProvisioning_TrialAtEU(t *testing.T) {
 					}
 		}`)
 	opID := suite.DecodeOperationID(resp)
-	suite.processReconcilingByOperationID(opID)
+	suite.processProvisioningAndReconcilingByOperationID(opID)
 
 	// then
 	suite.AssertAWSRegionAndZone("eu-west-1")
@@ -220,7 +219,7 @@ func TestProvisioningWithReconciler_HappyPath(t *testing.T) {
 		}`)
 
 	opID := suite.DecodeOperationID(resp)
-	suite.processReconcilingByOperationID(opID)
+	suite.processProvisioningAndReconcilingByOperationID(opID)
 	provisioningOp, _ := suite.db.Operations().GetProvisioningOperationByID(opID)
 	clusterID := provisioningOp.InstanceDetails.ServiceManagerClusterID
 
@@ -277,7 +276,7 @@ func TestProvisioningWithReconcilerWithBTPOperator_HappyPath(t *testing.T) {
 		}`)
 
 	opID := suite.DecodeOperationID(resp)
-	suite.processReconcilingByOperationID(opID)
+	suite.processProvisioningAndReconcilingByOperationID(opID)
 
 	// then
 	suite.AssertProvider("aws")
@@ -720,7 +719,7 @@ func TestProvisioning_WithoutNetworkFilter(t *testing.T) {
 					}
 		}`)
 	opID := suite.DecodeOperationID(resp)
-	suite.processReconcilingByOperationID(opID)
+	suite.processProvisioningAndReconcilingByOperationID(opID)
 	instance := suite.GetInstance(iid)
 
 	// then
@@ -755,7 +754,7 @@ func TestProvisioning_WithNetworkFilter(t *testing.T) {
 					}
 		}`)
 	opID := suite.DecodeOperationID(resp)
-	suite.processReconcilingByOperationID(opID)
+	suite.processProvisioningAndReconcilingByOperationID(opID)
 	instance := suite.GetInstance(iid)
 
 	// then
